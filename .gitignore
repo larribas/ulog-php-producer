@@ -1,0 +1,9 @@
+# Composer artifacts
+vendor/
+bin/
+composer.phar
+composer.lock
+
+# Testing artifacts
+phpunit
+phpunit.xml
