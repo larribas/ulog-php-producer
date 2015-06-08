@@ -1,6 +1,6 @@
-# PHP ULog Client
+# ULog PHP Producer
 
-This is a PHP client for [ULog](https://github.com/socialpoint/ulog) that focuses on producing events and sending them to ULog.
+This is a PHP library for [ULog](https://github.com/socialpoint/ulog) that focuses on producing events and sending them to ULog.
 
 This project's goal is to provide a straightforward interface so that PHP applications can easily append events to a ULog enterprise log
 
@@ -11,7 +11,7 @@ This project's goal is to provide a straightforward interface so that PHP applic
 
 ```php
 // Clients are supplied the ULog host:port combination, and an access token
-$client = new ulog\Client('127.0.0.1', '80', 'Acngqr8chd');
+$client = new ulog\Client('http://localhost', '80', 'Acngqr8chd');
 $producer = new ulog\Producer($client);
 
 $events = array(
@@ -26,7 +26,7 @@ $producer->produce($events, $callback);
 
 ```php
 // Clients are supplied the ULog host:port combination, and an access token
-$client = new ulog\Client('127.0.0.1', '80', 'Acngqr8chd');
+$client = new ulog\Client('http://localhost', '80', 'Acngqr8chd');
 $producer = new ulog\Producer($client);
 
 $event = new ulog\Event('stream name', 'event type', 2 /* version */, 'partition key', 214235355 /* timestamp */, $content);
@@ -42,7 +42,7 @@ $producer->produceQueue($callback);
 
 ```php
 // Clients are supplied the ULog host:port combination, and an access token
-$client = new ulog\Client('127.0.0.1', '80', 'Acngqr8chd');
+$client = new ulog\Client('http://localhost', '80', 'Acngqr8chd');
 $producer = new ulog\Producer($client, array('synchronous' => true));
 
 $events = array(
