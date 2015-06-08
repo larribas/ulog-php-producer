@@ -2,20 +2,9 @@
   "name":"socialpoint/php-ulog-client",
   "description":"PHP Client to append events to ULog",
   "license":"proprietary",
-
-  /*
-  TODO Add when I upload the project to the company's Github
-  "repositories":[
-    {
-      "type":"git",
-      "url":"git@github.com:socialpoint/php-ulog-client.git"
-    }
-  ],
-  */
-
   "type":"bundle",
   "require": {
-
+    "guzzlehttp/guzzle": "~6.0"
   },
   "require-dev":{
     "phpunit/phpunit":"~4.6"
