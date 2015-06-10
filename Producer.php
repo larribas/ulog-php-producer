@@ -4,16 +4,22 @@ namespace ulog;
 
 class Producer
 {
-    const APPEND_ENDPOINT = '/streams/append';
+    const APPEND_ENDPOINT = '/streams/events';
 
     /** @var Client */
     private $client;
 
+    /** @var array */
+    private $queue;
+
+    // OPTIONS
+
     /** @var bool */
     private $isSynchronous;
 
-    /** @var array */
-    private $queue;
+    /** @var bool */
+    private $forceAll;
+
 
     /**
      * Instantiate an event producer from a ULog client
@@ -26,7 +32,8 @@ class Producer
         $this->client = $client;
 
         // Process options
-        $this->isSynchronous = array_key_exists('synchronous', $options);
+        $this->isSynchronous = in_array('synchronous', $options);
+        $this->forceAll = in_array('force_all', $options);
 
         $this->queue = array();
     }
@@ -35,27 +42,28 @@ class Producer
      * Produce a sequence of events and invoke the provided callback with the results
      *
      * @param array $events
-     * @param callable $callback
+     * @param callable $success The function to be invoked with the client's results, if the request is successful
+     * @param callable $failure The function to be invoked with the client's results, if the request is unsuccessful
      */
-    public function produce(array $events, callable $callback)
+    public function produce(array $events, callable $success, callable $failure)
     {
         $eventsToAppend = array_map(function(Event $e){ return $e->toArray(); }, $events);
 
         /** @var \GuzzleHttp\Promise\Promise $promise */
-        $promise = $this->client->postAsync(self::APPEND_ENDPOINT, array('json' => array($eventsToAppend)));
+        $promise = $this->client->postAsync(self::APPEND_ENDPOINT, array('json' => $eventsToAppend));
+
+        $promise->then(
+            function(\Psr\Http\Message\ResponseInterface $response) use($success) {
+                call_user_func($success, json_decode($response->getBody()->getContents(), true));
+            },
+            function(\GuzzleHttp\Exception\RequestException $exc) use($failure) {
+                call_user_func($failure, json_decode($exc->getResponse()->getBody()->getContents(), true));
+            }
+        );
 
         if ($this->isSynchronous) {
             $promise->wait();
         }
-
-        $promise->then(
-            function($response) use($callback) {
-                call_user_func($callback, $this->unwrapResponse($response));
-            },
-            function(\GuzzleHttp\Exception\RequestException $exc) use($callback) {
-                call_user_func($callback, $this->unwrapResponse($exc->getResponse()));
-            }
-        );
     }
 
     /**
@@ -71,11 +79,12 @@ class Producer
     /**
      * Flush all events in the deferred queue and invoke the provided callback with the server's response
      *
-     * @param callable $callback The function to be invoked with the client's results
+     * @param callable $success The function to be invoked with the client's results, if the request is successful
+     * @param callable $failure The function to be invoked with the client's results, if the request is unsuccessful
      */
-    public function produceQueue(callable $callback)
+    public function produceQueue(callable $success, callable $failure)
     {
-        $this->produce($this->queue, $callback);
+        $this->produce($this->queue, $success, $failure);
         $this->clearQueue();
     }
 
@@ -85,21 +94,5 @@ class Producer
     public function clearQueue()
     {
         $this->queue = array();
-    }
-
-    /**
-     * Unwraps the raw ULog response and turn it into a useful PHP construct
-     */
-    private function unwrapResponse(\Psr\Http\Message\ResponseInterface $response)
-    {
-        // Test if the failed response is due to a general error or the fact that some of the events could not be appended
-        $body = $response->getBody()->getContents();
-
-        $json = json_decode($body, true);
-        if (json_last_error() !== 0) {
-            return $json;
-        }
-
-        return array('error' => $body);
     }
 }

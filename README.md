@@ -11,7 +11,7 @@ This project's goal is to provide a straightforward interface so that PHP applic
 
 ```php
 // Clients are supplied the ULog host:port combination, and an access token
-$client = new ulog\Client('127.0.0.1', '80', 'Acngqr8chd');
+$client = new ulog\Client('http://127.0.0.1', 'Acngqr8chd');
 $producer = new ulog\Producer($client);
 
 $events = array(
@@ -26,7 +26,7 @@ $producer->produce($events, $callback);
 
 ```php
 // Clients are supplied the ULog host:port combination, and an access token
-$client = new ulog\Client('127.0.0.1', '80', 'Acngqr8chd');
+$client = new ulog\Client('http://127.0.0.1', 'Acngqr8chd');
 $producer = new ulog\Producer($client);
 
 $event = new ulog\Event('stream name', 'event type', 2 /* version */, 'partition key', 214235355 /* timestamp */, $content);
@@ -42,7 +42,7 @@ $producer->produceQueue($callback);
 
 ```php
 // Clients are supplied the ULog host:port combination, and an access token
-$client = new ulog\Client('127.0.0.1', '80', 'Acngqr8chd');
+$client = new ulog\Client('http://127.0.0.1', 'Acngqr8chd');
 $producer = new ulog\Producer($client, array('synchronous' => true));
 
 $events = array(
@@ -80,7 +80,7 @@ or
 
 ```php
 [
-    'error' => 'ErrorType',
-    'message' => 'Error message returned by the server, clarifying the error'
+    'error_type' => 'ErrorType',
+    'error_message' => 'Error message returned by the server, clarifying the error'
 ]
 ```

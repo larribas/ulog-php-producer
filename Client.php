@@ -16,14 +16,13 @@ class Client
     /**
      * Instantiate a new client with the appropriate request format headers and base url
      *
-     * @param string $host Host of the ULog instance
-     * @param string $port Port of the ULog instance
+     * @param string $address Address of the ULog instance
      * @param string $token Access token to include in each request's Authorization header
      */
-    public function __construct($host, $port, $token)
+    public function __construct($address, $token)
     {
         $this->guzzleClient = new \GuzzleHttp\Client(array(
-            'base_uri' => sprintf('%s:%s', $host, $port),
+            'base_uri' => $address,
             'headers' => array(
                 'Authorization' => $token
             )
@@ -35,10 +34,11 @@ class Client
      *
      * @param string $name Name of the invoked method
      * @param array $arguments List of arguments to such method
+     * @return mixed The result of said function
      */
     public function __call($name, $arguments)
     {
         // Delegate missing methods to Guzzle's Client
-        call_user_func_array(array($this->guzzleClient, $name), $arguments);
+        return call_user_func_array(array($this->guzzleClient, $name), $arguments);
     }
 }
