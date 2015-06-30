@@ -1,13 +1,17 @@
 {
-  "name":"socialpoint/php-ulog-client",
-  "description":"PHP Client to append events to ULog",
-  "license":"proprietary",
-  "type":"bundle",
+  "name": "socialpoint/ulog-php-producer",
+  "type": "library",
+  "description": "PHP library to append events to ULog",
+  "license": "MIT",
+  "type": "bundle",
   "require": {
     "guzzlehttp/guzzle": "~6.0"
   },
   "require-dev":{
     "phpunit/phpunit":"~4.6"
+  },
+  "autoload": {
+      "psr-4": {"ulog\\": "src/"}
   },
   "config": {
     "bin-dir": "bin"

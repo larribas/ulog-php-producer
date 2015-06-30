@@ -43,7 +43,7 @@ $producer->produceQueue($callback);
 ```php
 // Clients are supplied the ULog host:port combination, and an access token
 $client = new ulog\Client('http://localhost', 'Acngqr8chd');
-$producer = new ulog\Producer($client, array('synchronous' => true));
+$producer = new ulog\Producer($client, array('synchronous'));
 
 $events = array(
     new ulog\Event('stream name', 'event type', 2 /* version */, 'partition key', 214235355 /* timestamp */, $content)
